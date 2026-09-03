@@ -67,6 +67,51 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
     super.dispose();
   }
 
+  Future<void> _showHistory() async {
+    final l10n = AppLocalizations.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.6,
+          builder: (context, scrollController) {
+            if (_history.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(l10n.zakatHistoryEmpty, style: const TextStyle(color: AppColors.mutedText)),
+                ),
+              );
+            }
+            return ListView.separated(
+              controller: scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _history.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final entry = _history[index];
+                final date = DateTime.tryParse(entry['date'] as String? ?? '');
+                final netWealth = (entry['netWealth'] as num?)?.toDouble() ?? 0;
+                final zakatDue = (entry['zakatDue'] as num?)?.toDouble() ?? 0;
+                return ListTile(
+                  leading: const Icon(Icons.receipt_long),
+                  title: Text(zakatDue.toStringAsFixed(2)),
+                  subtitle: Text(
+                    date == null
+                        ? ''
+                        : '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}  \u2022  ${l10n.zakatNetWealth}: ${netWealth.toStringAsFixed(2)}',
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
   double _num(TextEditingController c) => double.tryParse(c.text.trim()) ?? 0;
 
   void _recalculate() => setState(() {});
@@ -85,7 +130,17 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
     final zakatDue = meetsNisab ? netWealth * 0.025 : 0.0;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.zakatTitle), centerTitle: true),
+      appBar: AppBar(
+        title: Text(l10n.zakatTitle),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: l10n.zakatHistoryTooltip,
+            icon: const Icon(Icons.history),
+            onPressed: _showHistory,
+          ),
+        ],
+      ),
       body: ListView(
         padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
         children: [
@@ -140,6 +195,22 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          if (meetsNisab)
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () async {
+                  await _saveToHistory(netWealth.toDouble(), zakatDue);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.zakatSavedToHistory)),
+                  );
+                },
+                icon: const Icon(Icons.save_outlined),
+                label: Text(l10n.zakatSaveToHistory),
+              ),
+            ),
           const SizedBox(height: 16),
           Text(
             l10n.zakatFootnote,

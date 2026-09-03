@@ -163,7 +163,7 @@ class AppSettings extends ChangeNotifier {
   TextDirection get textDirection =>
       _rtlLanguageCodes.contains(locale.languageCode) ? TextDirection.rtl : TextDirection.ltr;
 
-  Future<bool> hasCustomAzkarReminder(String id) => customAzkarReminders.contains(id);
+  Future<bool> hasCustomAzkarReminder(String id) async => customAzkarReminders.contains(id);
   
   Future<void> addCustomAzkarReminder(String id) async {
     customAzkarReminders.add(id);
