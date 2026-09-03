@@ -57,7 +57,7 @@ class _ActivityHeatmapScreenState extends State<ActivityHeatmapScreen> {
   Widget build(BuildContext context) {
     final isAr = _isAr;
     return Scaffold(
-      appBar: AppBar(title: Text(isAr ? '\\u062e\\u0631\\u064a\\u0637\\u0629 \\u0627\\u0644\\u0646\\u0634\\u0627\\u0637' : 'Activity Heatmap'), centerTitle: true),
+      appBar: AppBar(title: Text(isAr ? 'خريطة النشاط' : 'Activity Heatmap'), centerTitle: true),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -66,7 +66,7 @@ class _ActivityHeatmapScreenState extends State<ActivityHeatmapScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    isAr ? '\\u0622\\u062e\\u0631 5 \\u0623\\u0633\\u0627\\u0628\\u064a\\u0639' : 'Last 5 weeks',
+                    isAr ? 'آخر 5 أسابيع' : 'Last 5 weeks',
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 12),

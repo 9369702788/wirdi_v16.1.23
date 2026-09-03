@@ -43,7 +43,7 @@ class _HifzRevisionScreenState extends State<HifzRevisionScreen> {
   Widget build(BuildContext context) {
     final isAr = _isAr;
     return Scaffold(
-      appBar: AppBar(title: Text(isAr ? '\\u0645\\u0631\\u0627\\u062c\\u0639\\u0629 \\u0627\\u0644\\u062d\\u0641\\u0638' : 'Hifz Revision'), centerTitle: true),
+      appBar: AppBar(title: Text(isAr ? 'مراجعة الحفظ' : 'Hifz Revision'), centerTitle: true),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : (_due == null || _due!.isEmpty)
@@ -52,7 +52,8 @@ class _HifzRevisionScreenState extends State<HifzRevisionScreen> {
                     padding: const EdgeInsets.all(24),
                     child: Text(
                       isAr
-                          ? '\\u0644\\u0627 \\u062a\\u0648\\u062c\\u062f \\u0645\\u0642\\u0627\\u0637\\u0639 \\u0645\\u062d\\u0641\\u0648\\u0638\\u0629 \\u062a\\u062d\\u062a\\u0627\\u062c \\u0645\\u0631\\u0627\\u062c\\u0639\\u0629 \\u062d\\u0627\\u0644\\u064a\\u064b\\u0627. \\u0623\\u0643\\u0645\\u0644 \\u062e\\u0637\\u0629 \\u062d\\u0641\\u0638 \\u064a\\u0648\\u0645\\u064a\\u0629 \\u0644\\u062a\\u0638\\u0647\\u0631 \\u0647\\u0646\\u0627 \\u0644\\u0627\\u062d\\u0642\\u064b\\u0627 \\u0644\\u0644\\u0645\\u0631\\u0627\\u062c\\u0639\\u0629.',
+                          ? 'لا توجد مقاطع محفوظة تحتاج مراجعة حالياً. أكمل خطة حفظ يومية لتظهر هنا لاحقاً للمراجعة.'
+                          : 'No portions due for revision yet. Complete a daily memorization plan for it to appear here later for revision.',
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: AppColors.mutedText),
                     ),
@@ -72,7 +73,7 @@ class _HifzRevisionScreenState extends State<HifzRevisionScreen> {
                           subtitle: Text("${p['start']} - ${p['end']}"),
                           trailing: FilledButton(
                             onPressed: () => _markRevised(p['id'] as String),
-                            child: Text(isAr ? '\\u062a\\u0645\\u062a \\u0627\\u0644\\u0645\\u0631\\u0627\\u062c\\u0639\\u0629' : 'Revised'),
+                            child: Text(isAr ? 'تمت المراجعة' : 'Revised'),
                           ),
                         ),
                       );
