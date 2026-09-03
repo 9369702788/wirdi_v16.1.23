@@ -252,7 +252,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.primaryEmerald)),
+      child: Text(text, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.primaryEmerald)),
     );
   }
 }

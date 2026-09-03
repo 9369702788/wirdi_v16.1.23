@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/models/quran_models.dart';
 import '../../core/services/hifz_service.dart';
 import '../../core/services/quran_repository.dart';
 import '../../core/theme/app_theme.dart';
@@ -66,11 +65,11 @@ class _HifzRevisionScreenState extends State<HifzRevisionScreen> {
                     itemCount: _due!.length,
                     itemBuilder: (context, index) {
                       final p = _due![index];
-                      final surahName = _surahNames[p['surah']] ?? '${p['surah']}';
+                      final surahName = _surahNames[p['surah']] ?? "${p['surah']}";
                       return Card(
                         child: ListTile(
                           title: Text(surahName, textDirection: TextDirection.rtl),
-                          subtitle: Text('${p['start']} - ${p['end']}'),
+                          subtitle: Text("${p['start']} - ${p['end']}"),
                           trailing: FilledButton(
                             onPressed: () => _markRevised(p['id'] as String),
                             child: Text(isAr ? '\\u062a\\u0645\\u062a \\u0627\\u0644\\u0645\\u0631\\u0627\\u062c\\u0639\\u0629' : 'Revised'),

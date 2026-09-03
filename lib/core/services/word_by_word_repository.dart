@@ -12,7 +12,7 @@ class WbwWord {
 class WordByWordRepository {
   WordByWordRepository._();
 
-  static Map<String, List<WbwWord>> _memoryCache = {};
+  static final Map<String, List<WbwWord>> _memoryCache = {};
 
   static Future<List<WbwWord>> wordsFor(int surah, int ayah) async {
     final key = '${surah}_$ayah';

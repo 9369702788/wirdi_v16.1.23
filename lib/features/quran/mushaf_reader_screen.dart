@@ -793,7 +793,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen> {
                   ),
                   if (SajdaTrackerService.isSajdaVerse(surah.number, ayah.number))
                     IconButton(
-                      icon: const Icon(Icons.self_improvement, color: AppColors.primaryEmerald),
+                      icon: Icon(Icons.self_improvement, color: AppColors.primaryEmerald),
                       tooltip: _t(context, '\u0633\u062c\u062f\u0629 \u062a\u0644\u0627\u0648\u0629', 'Sajda Tilawah'),
                       onPressed: () => _confirmSajda(surah.number, ayah.number),
                     ),
