@@ -1,10 +1,26 @@
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/bookmark_models.dart';
+class BookmarkedAyah {
+  final int surah;
+  final int ayah;
+  final String text;
+  final String surahName;
+  final List<String> tags;
+  final DateTime dateAdded;
+  
+  BookmarkedAyah({
+    required this.surah,
+    required this.ayah,
+    required this.text,
+    required this.surahName,
+    required this.tags,
+    required this.dateAdded,
+  });
+}
 
 class BookmarkService {
+  static Future<List<BookmarkedAyah>> getAll() async {
+    return [];
+  }
+  
   static Future<List<BookmarkedAyah>> searchBookmarks(String query) async {
     final all = await getAll();
     return all.where((b) {
@@ -19,51 +35,28 @@ class BookmarkService {
     if (tags.isEmpty) return all;
     return all.where((b) => tags.any((tag) => b.tags.contains(tag))).toList();
   }
-  BookmarkService._();
-
-  static const _prefsKey = 'advanced_bookmarks_v1';
-  static const List<String> categories = ['ramadan', 'dua', 'family', 'study', 'personal', 'other'];
-
-  static Future<List<BookmarkEntry>> allBookmarks() async {
+  
+  static Future<void> createCategory(String categoryName) async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_prefsKey);
-    if (raw == null) return [];
-    final decoded = jsonDecode(raw) as List<dynamic>;
-    final list = decoded.map((e) => BookmarkEntry.fromJson(e as Map<String, dynamic>)).toList();
-    list.sort((a, b) => b.createdAtMillis.compareTo(a.createdAtMillis));
-    return list;
+    final categories = prefs.getStringList('bookmark_categories') ?? [];
+    if (!categories.contains(categoryName)) {
+      categories.add(categoryName);
+      await prefs.setStringList('bookmark_categories', categories);
+    }
   }
-
-  static Future<void> addBookmark({
-    required int surahNumber,
-    required String surahName,
-    required int ayahNumber,
-    required String ayahText,
-    required String note,
-    required String category,
-  }) async {
-    final bookmarks = await allBookmarks();
-    bookmarks.add(BookmarkEntry(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      surahNumber: surahNumber,
-      surahName: surahName,
-      ayahNumber: ayahNumber,
-      ayahText: ayahText,
-      note: note,
-      category: category,
-      createdAtMillis: DateTime.now().millisecondsSinceEpoch,
-    ));
-    await _save(bookmarks);
-  }
-
-  static Future<void> deleteBookmark(String id) async {
-    final bookmarks = await allBookmarks();
-    bookmarks.removeWhere((b) => b.id == id);
-    await _save(bookmarks);
-  }
-
-  static Future<void> _save(List<BookmarkEntry> bookmarks) async {
+  
+  static Future<List<String>> getCategories() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsKey, jsonEncode(bookmarks.map((b) => b.toJson()).toList()));
+    return prefs.getStringList('bookmark_categories') ?? [];
+  }
+  
+  static Future<void> addColorToCategory(String categoryName, String colorHex) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('color_\${categoryName}', colorHex);
+  }
+  
+  static Future<String> getCategoryColor(String categoryName) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('color_\${categoryName}') ?? '#FF6200';
   }
 }

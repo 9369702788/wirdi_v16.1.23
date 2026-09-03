@@ -1,4 +1,3 @@
-import '../data/daily_quotes.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'notification_service.dart';
 import 'settings_service.dart';
