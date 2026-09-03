@@ -24,6 +24,14 @@ class MyDuasScreen extends StatefulWidget {
   State<MyDuasScreen> createState() => _MyDuasScreenState();
 }
 
+final duasByOccasion = {
+  'wedding': ['Dua for newlyweds', 'Dua for blessed marriage'],
+  'travel': ['Dua for safe journey', 'Dua for travelers'],
+  'illness': ['Dua for healing', 'Dua for recovery'],
+  'fear': ['Dua for courage', 'Dua for protection from fear'],
+  'success': ['Dua for achievement', 'Dua for success in endeavors'],
+};
+
 class _MyDuasScreenState extends State<MyDuasScreen> {
   static const _prefsKey = 'my_duas_v1';
   List<_MyDua> _duas = [];

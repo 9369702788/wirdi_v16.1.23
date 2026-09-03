@@ -15,6 +15,29 @@ import 'local_cache_service.dart';
 /// network and cache the result. If the network fetch fails and there is
 /// no cache, the error is rethrown so the UI can show a real error state.
 class QuranRepository {
+  static Future<Map<String, dynamic>?> getSurahSummary(int surahNumber) async {
+    final summaries = {
+      1: {'name': 'Al-Fatiha', 'verses': 7, 'type': 'Meccan', 'theme': 'Opening chapter'},
+      2: {'name': 'Al-Baqarah', 'verses': 286, 'type': 'Medinan', 'theme': 'The Cow'},
+      3: {'name': 'Aal-i-Imran', 'verses': 200, 'type': 'Medinan', 'theme': 'Family of Imran'},
+    };
+    return summaries[surahNumber];
+  }
+  static Future<Map<String, dynamic>?> getLastReadPosition() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('last_read_position');
+    return raw != null ? jsonDecode(raw) as Map<String, dynamic> : null;
+  }
+  
+  static Future<void> saveLastReadPosition(int surah, int ayah) async {
+    final prefs = await SharedPreferences.getInstance();
+    final position = {
+      'surah': surah,
+      'ayah': ayah,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+    await prefs.setString('last_read_position', jsonEncode(position));
+  }
   QuranRepository._();
 
   static const String _cacheKey = 'cache_quran_json_v1';

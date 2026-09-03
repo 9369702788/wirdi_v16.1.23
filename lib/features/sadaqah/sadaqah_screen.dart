@@ -33,7 +33,21 @@ class _SadaqahScreenState extends State<SadaqahScreen> {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     final total = SadaqahService.totalAmount(_entries);
     return Scaffold(
-      appBar: AppBar(title: Text(isAr ? '\u0645\u062a\u062a\u0628\u0651\u0639 \u0627\u0644\u0635\u062f\u0642\u0629' : 'Sadaqah Tracker'), centerTitle: true),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () async {
+              final current = appSettings.dailyReminder('sadaqah');
+              await appSettings.setDailyReminder('sadaqah', current.copyWith(enabled: !current.enabled));
+              if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(current.enabled ? 'تذكير الصدقة معطّل' : 'تذكير الصدقة مفعّل')),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Column(title: Text(isAr ? '\u0645\u062a\u062a\u0628\u0651\u0639 \u0627\u0644\u0635\u062f\u0642\u0629' : 'Sadaqah Tracker'), centerTitle: true),
       floatingActionButton: FloatingActionButton(onPressed: _addEntry, child: const Icon(Icons.add)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

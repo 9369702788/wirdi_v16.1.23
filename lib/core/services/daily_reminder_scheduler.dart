@@ -1,3 +1,4 @@
+import '../data/daily_quotes.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'notification_service.dart';
 import 'settings_service.dart';
@@ -10,6 +11,7 @@ class DailyReminderScheduler {
   static const _idEveningAzkar = 900000002;
   static const _idDailyWird = 900000003;
   static const _idSleepAzkar = 900000004;
+  static const _idDailyQuote = 900000005;
 
   static Future<String> rescheduleAll(AppLocalizations l10n) async {
     final reminders = <RecurringReminder>[];
@@ -74,6 +76,18 @@ class DailyReminderScheduler {
       ));
     }
 
+    final sadaqah = appSettings.dailyReminder('sadaqah');
+    if (sadaqah.enabled) {
+      reminders.add(RecurringReminder(
+        id: 900000005,
+        hour: sadaqah.hour,
+        minute: sadaqah.minute,
+        title: l10n.appTitle,
+        body: 'تذكير: هل تصدّقت اليوم؟',
+        recurrence: RecurrenceType.daily,
+      ));
+    }
+    
     if (reminders.isEmpty) {
       await NotificationService.cancelAllRecurring();
       return 'All reminders disabled';

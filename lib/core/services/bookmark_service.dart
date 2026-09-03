@@ -5,6 +5,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bookmark_models.dart';
 
 class BookmarkService {
+  static Future<List<BookmarkedAyah>> searchBookmarks(String query) async {
+    final all = await getAll();
+    return all.where((b) {
+      return b.text.toLowerCase().contains(query.toLowerCase()) ||
+             b.surahName.toLowerCase().contains(query.toLowerCase()) ||
+             b.tags.any((t) => t.toLowerCase().contains(query.toLowerCase()));
+    }).toList();
+  }
+  
+  static Future<List<BookmarkedAyah>> filterByTags(List<String> tags) async {
+    final all = await getAll();
+    if (tags.isEmpty) return all;
+    return all.where((b) => tags.any((tag) => b.tags.contains(tag))).toList();
+  }
   BookmarkService._();
 
   static const _prefsKey = 'advanced_bookmarks_v1';

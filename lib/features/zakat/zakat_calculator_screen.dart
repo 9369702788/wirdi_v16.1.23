@@ -19,6 +19,31 @@ class ZakatCalculatorScreen extends StatefulWidget {
 }
 
 class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
+  List<Map<String, dynamic>> _history = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+  
+  Future<void> _loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList('zakat_history') ?? [];
+    setState(() {
+      _history = raw.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
+    });
+  }
+  
+  Future<void> _saveToHistory(double netWealth, double zakatDue) async {
+    final prefs = await SharedPreferences.getInstance();
+    _history.insert(0, {
+      'date': DateTime.now().toIso8601String(),
+      'netWealth': netWealth,
+      'zakatDue': zakatDue,
+    });
+    await prefs.setStringList('zakat_history', _history.map((e) => jsonEncode(e)).toList());
+  }
   final _cashController = TextEditingController();
   final _goldSilverController = TextEditingController();
   final _investmentsController = TextEditingController();

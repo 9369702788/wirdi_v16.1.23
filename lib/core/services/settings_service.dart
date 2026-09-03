@@ -78,6 +78,8 @@ class AppSettings extends ChangeNotifier {
   bool _postPrayerReminderEnabled = false;
   int _postPrayerReminderMinutesAfter = 30;
   int _prayerReminderMinutesBefore = 10;
+  Set<String> _favoriteReciterIds = {};
+  bool _highContrastEnabled = false;
   int _prayerCalcMethod = 5;
   bool _ongoingPrayerNotificationEnabled = false;
   // 'banner' | 'beep' | 'adhan'
@@ -116,6 +118,8 @@ class AppSettings extends ChangeNotifier {
   bool get postPrayerReminderEnabled => _postPrayerReminderEnabled;
   int get postPrayerReminderMinutesAfter => _postPrayerReminderMinutesAfter;
   int get prayerReminderMinutesBefore => _prayerReminderMinutesBefore;
+  bool isFavoriteReciter(String id) => _favoriteReciterIds.contains(id);
+  bool get highContrastEnabled => _highContrastEnabled;
   int get prayerCalcMethod => _prayerCalcMethod;
   bool get ongoingPrayerNotificationEnabled => _ongoingPrayerNotificationEnabled;
   String get prayerReminderMode => _prayerReminderMode;
@@ -154,6 +158,38 @@ class AppSettings extends ChangeNotifier {
   TextDirection get textDirection =>
       _rtlLanguageCodes.contains(locale.languageCode) ? TextDirection.rtl : TextDirection.ltr;
 
+  Future<bool> hasCustomAzkarReminder(String id) => customAzkarReminders.contains(id);
+  
+  Future<void> addCustomAzkarReminder(String id) async {
+    customAzkarReminders.add(id);
+    notifyListeners();
+  }
+  
+  Future<void> removeCustomAzkarReminder(String id) async {
+    customAzkarReminders.remove(id);
+    notifyListeners();
+  }
+  
+  Future<String> exportDataAsJson() async {
+    final prefs = await SharedPreferences.getInstance();
+    final backup = {
+      'exportDate': DateTime.now().toIso8601String(),
+      'appVersion': '1.51.0',
+      'data': {
+        'theme': _themeMode.toString(),
+        'locale': _locale?.toString(),
+        'fontScale': _fontScale,
+        'highContrast': _highContrastEnabled,
+        'favoriteReciter': _reciterId,
+        'allSettings': prefs.getKeys().fold<Map<String, dynamic>>({}, (acc, key) {
+          acc[key] = prefs.get(key);
+          return acc;
+        }),
+      },
+    };
+    return jsonEncode(backup);
+  }
+  
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -180,6 +216,8 @@ class AppSettings extends ChangeNotifier {
       final legacyEnabled = prefs.getBool('settings_prayer_reminder_enabled') ?? false;
       _enabledPrayerReminders = legacyEnabled ? remindablePrayerKeys.toSet() : <String>{};
     }
+    _favoriteReciterIds = (prefs.getStringList('settings_favorite_reciter_ids') ?? []).toSet();
+    _highContrastEnabled = prefs.getBool('settings_high_contrast') ?? false;
     _prayerCalcMethod = prefs.getInt('settings_prayer_calc_method') ?? 5;
     _ongoingPrayerNotificationEnabled = prefs.getBool('settings_ongoing_prayer_notification') ?? false;
     final storedOverride = prefs.getString('settings_prayer_sound_override');
@@ -312,6 +350,24 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('settings_prayer_sound_override', jsonEncode(_prayerSoundOverride));
+  }
+
+  Future<void> toggleFavoriteReciter(String id) async {
+    if (_favoriteReciterIds.contains(id)) {
+      _favoriteReciterIds.remove(id);
+    } else {
+      _favoriteReciterIds.add(id);
+    }
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('settings_favorite_reciter_ids', _favoriteReciterIds.toList());
+  }
+
+  Future<void> setHighContrastEnabled(bool value) async {
+    _highContrastEnabled = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('settings_high_contrast', value);
   }
 
   Future<void> setPrayerCalcMethod(int method) async {

@@ -106,11 +106,45 @@ class HifzService {
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     final yesterdayStr =
         '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+    final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
+    final twoDaysAgoStr =
+        '${twoDaysAgo.year}-${twoDaysAgo.month.toString().padLeft(2, '0')}-${twoDaysAgo.day.toString().padLeft(2, '0')}';
     final currentStreak = prefs.getInt(_streakKey) ?? 0;
-    final newStreak = lastCompleted == yesterdayStr ? currentStreak + 1 : 1;
+    await _grantMonthlyStreakFreezeIfDue(prefs);
+    final freezesAvailable = prefs.getInt(_freezesKey) ?? 0;
+
+    int newStreak;
+    if (lastCompleted == yesterdayStr) {
+      newStreak = currentStreak + 1;
+    } else if (lastCompleted == twoDaysAgoStr && freezesAvailable > 0) {
+      await prefs.setInt(_freezesKey, freezesAvailable - 1);
+      newStreak = currentStreak + 1;
+    } else {
+      newStreak = 1;
+    }
     await prefs.setInt(_streakKey, newStreak);
     await prefs.setString(_lastCompletedDateKey, todayStr);
     return newStreak;
+  }
+
+  static const _freezesKey = 'hifz_streak_freezes_available';
+  static const _freezeLastGrantMonthKey = 'hifz_streak_freeze_last_grant_month';
+
+  static Future<void> _grantMonthlyStreakFreezeIfDue(SharedPreferences prefs) async {
+    final now = DateTime.now();
+    final monthKey = '${now.year}-${now.month}';
+    final lastGrantMonth = prefs.getString(_freezeLastGrantMonthKey);
+    if (lastGrantMonth == monthKey) return;
+    final current = prefs.getInt(_freezesKey) ?? 0;
+    final next = current + 1 > 2 ? 2 : current + 1;
+    await prefs.setInt(_freezesKey, next);
+    await prefs.setString(_freezeLastGrantMonthKey, monthKey);
+  }
+
+  static Future<int> streakFreezesAvailable() async {
+    final prefs = await SharedPreferences.getInstance();
+    await _grantMonthlyStreakFreezeIfDue(prefs);
+    return prefs.getInt(_freezesKey) ?? 0;
   }
 
   static Future<List<Map<String, dynamic>>> _loadRevisionPortions() async {

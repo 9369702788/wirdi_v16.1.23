@@ -11,6 +11,51 @@ import '../../l10n/generated/app_localizations.dart';
 /// simulated data source. Shows the last 4 calendar weeks (Saturday to
 /// Friday, matching the app's existing week-start convention) so the
 /// user can see at a glance which days met their daily wird target.
+class HijriConverter {
+  static String convertToHijri(DateTime gregorian) {
+    final jd = _gregorianToJD(gregorian);
+    final hijri = _jdToHijri(jd);
+    return '\${hijri['day']}/\${hijri['month']}/\${hijri['year']} AH';
+  }
+  
+  static DateTime convertToGregorian(int hijriDay, int hijriMonth, int hijriYear) {
+    final jd = _hijriToJD(hijriDay, hijriMonth, hijriYear);
+    return _jdToGregorian(jd);
+  }
+  
+  static int _gregorianToJD(DateTime g) {
+    final a = (14 - g.month) ~/ 12;
+    final y = g.year + 4800 - a;
+    final m = g.month + 12 * a - 3;
+    return g.day + (153 * m + 2) ~/ 5 + 365 * y + y ~/ 4 - y ~/ 100 + y ~/ 400 - 32045;
+  }
+  
+  static Map<String, int> _jdToHijri(int jd) {
+    final n = jd + 1948440 - 385;
+    final q = n ~/ 10631;
+    final r = n % 10631;
+    final a = (r ~/ 5265) + 1;
+    final w = r - 5265 * a + 1;
+    final q1 = w ~/ 354;
+    final q2 = (w % 354) ~/ 30;
+    return {'year': 30 * q + 30 * a + q1 + 1, 'month': q2 + 1, 'day': (w % 30) + 1};
+  }
+  
+  static int _hijriToJD(int d, int m, int y) {
+    return (d + 29 * (m - 1) + (m - 1) ~/ 11 + (y - 1) * 354 + (3 + 11 * y) ~/ 30 + 1948440 - 385).toInt();
+  }
+  
+  static DateTime _jdToGregorian(int jd) {
+    final a = jd + 32044;
+    final b = (4 * a + 3) ~/ 146097;
+    final c = a - (146097 * b) ~/ 4;
+    final d = (4 * c + 3) ~/ 1461;
+    final e = c - (1461 * d) ~/ 4;
+    final m = (5 * e + 2) ~/ 153;
+    return DateTime(b * 100 + d - 4800 + m ~/ 10, m + 3 - 12 * (m ~/ 10), e - (153 * m + 2) ~/ 5 + 1);
+  }
+}
+
 class KhatmaCalendarScreen extends StatefulWidget {
   const KhatmaCalendarScreen({super.key});
 
