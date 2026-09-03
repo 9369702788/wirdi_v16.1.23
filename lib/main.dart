@@ -161,25 +161,24 @@ class WirdiApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           theme: AppTheme.light(appSettings.colorTheme), darkTheme: AppTheme.dark(appSettings.colorTheme), themeMode: appSettings.themeMode,
-          builder: (context, child) => Consumer<SettingsService>(
-        builder: (context, settings, _) {
-          final nightMode = settings.highContrastEnabled;
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(appSettings.fontScale),
-              highContrast: appSettings.highContrastEnabled,
-              boldText: appSettings.highContrastEnabled,
-            ),
-            child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            color: nightMode ? Colors.black : Colors.transparent,
-            child: Directionality(
-              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-              child: child!,
-            ),
-          ),
-            ),
-          ),
+          builder: (context, child) {
+            final nightMode = appSettings.amoledDarkMode;
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(appSettings.fontScale),
+                highContrast: appSettings.highContrastEnabled,
+                boldText: appSettings.highContrastEnabled,
+              ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                color: nightMode ? Colors.black : Colors.transparent,
+                child: Directionality(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  child: child!,
+                ),
+              ),
+            );
+          },
           initialRoute: '/splash',
           routes: {
             '/splash':     (context) => SplashScreen(onFinished: () => _afterSplash(context)),

@@ -10,7 +10,6 @@ class DailyReminderScheduler {
   static const _idEveningAzkar = 900000002;
   static const _idDailyWird = 900000003;
   static const _idSleepAzkar = 900000004;
-  static const _idDailyQuote = 900000005;
 
   static Future<String> rescheduleAll(AppLocalizations l10n) async {
     final reminders = <RecurringReminder>[];

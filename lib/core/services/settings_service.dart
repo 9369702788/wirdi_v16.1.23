@@ -80,6 +80,8 @@ class AppSettings extends ChangeNotifier {
   int _prayerReminderMinutesBefore = 10;
   Set<String> _favoriteReciterIds = {};
   bool _highContrastEnabled = false;
+  bool _amoledDarkMode = false;
+  final Set<String> customAzkarReminders = {};
   int _prayerCalcMethod = 5;
   bool _ongoingPrayerNotificationEnabled = false;
   // 'banner' | 'beep' | 'adhan'
@@ -97,6 +99,7 @@ class AppSettings extends ChangeNotifier {
     'eveningAzkar',
     'dailyWird',
     'sleepAzkar',
+    'sadaqah',
   ];
 
   final Map<String, DailyReminderSetting> _dailyReminders = {
@@ -105,6 +108,7 @@ class AppSettings extends ChangeNotifier {
     'eveningAzkar': const DailyReminderSetting(enabled: false, hour: 17, minute: 0),
     'dailyWird': const DailyReminderSetting(enabled: false, hour: 20, minute: 0),
     'sleepAzkar': const DailyReminderSetting(enabled: false, hour: 22, minute: 0),
+    'sadaqah': const DailyReminderSetting(enabled: false, hour: 20, minute: 0),
   };
 
   ThemeMode get themeMode => _themeMode;
@@ -120,6 +124,7 @@ class AppSettings extends ChangeNotifier {
   int get prayerReminderMinutesBefore => _prayerReminderMinutesBefore;
   bool isFavoriteReciter(String id) => _favoriteReciterIds.contains(id);
   bool get highContrastEnabled => _highContrastEnabled;
+  bool get amoledDarkMode => _amoledDarkMode;
   int get prayerCalcMethod => _prayerCalcMethod;
   bool get ongoingPrayerNotificationEnabled => _ongoingPrayerNotificationEnabled;
   String get prayerReminderMode => _prayerReminderMode;
@@ -163,11 +168,15 @@ class AppSettings extends ChangeNotifier {
   Future<void> addCustomAzkarReminder(String id) async {
     customAzkarReminders.add(id);
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('settings_custom_azkar_reminders', customAzkarReminders.toList());
   }
   
   Future<void> removeCustomAzkarReminder(String id) async {
     customAzkarReminders.remove(id);
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('settings_custom_azkar_reminders', customAzkarReminders.toList());
   }
   
   Future<String> exportDataAsJson() async {
@@ -218,6 +227,10 @@ class AppSettings extends ChangeNotifier {
     }
     _favoriteReciterIds = (prefs.getStringList('settings_favorite_reciter_ids') ?? []).toSet();
     _highContrastEnabled = prefs.getBool('settings_high_contrast') ?? false;
+    _amoledDarkMode = prefs.getBool('settings_amoled_dark_mode') ?? false;
+    customAzkarReminders
+      ..clear()
+      ..addAll(prefs.getStringList('settings_custom_azkar_reminders') ?? []);
     _prayerCalcMethod = prefs.getInt('settings_prayer_calc_method') ?? 5;
     _ongoingPrayerNotificationEnabled = prefs.getBool('settings_ongoing_prayer_notification') ?? false;
     final storedOverride = prefs.getString('settings_prayer_sound_override');
@@ -368,6 +381,13 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('settings_high_contrast', value);
+  }
+
+  Future<void> setAmoledDarkMode(bool value) async {
+    _amoledDarkMode = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('settings_amoled_dark_mode', value);
   }
 
   Future<void> setPrayerCalcMethod(int method) async {

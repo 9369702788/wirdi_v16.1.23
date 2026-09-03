@@ -1,9 +1,7 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/app_sources.dart';
 import '../models/quran_models.dart';

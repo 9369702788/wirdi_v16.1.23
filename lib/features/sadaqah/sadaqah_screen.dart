@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/services/sadaqah_service.dart';
+import '../../core/services/settings_service.dart';
 import '../../core/theme/app_theme.dart';
 
 class SadaqahScreen extends StatefulWidget {
@@ -34,20 +35,23 @@ class _SadaqahScreenState extends State<SadaqahScreen> {
     final total = SadaqahService.totalAmount(_entries);
     return Scaffold(
       appBar: AppBar(
+        title: Text(isAr ? '\u0645\u062a\u062a\u0628\u0651\u0639 \u0627\u0644\u0635\u062f\u0642\u0629' : 'Sadaqah Tracker'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () async {
               final current = appSettings.dailyReminder('sadaqah');
               await appSettings.setDailyReminder('sadaqah', current.copyWith(enabled: !current.enabled));
-              if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(current.enabled ? 'تذكير الصدقة معطّل' : 'تذكير الصدقة مفعّل')),
-              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(current.enabled ? '\u062a\u0630\u0643\u064a\u0631 \u0627\u0644\u0635\u062f\u0642\u0629 \u0645\u0639\u0637\u0651\u0644' : '\u062a\u0630\u0643\u064a\u0631 \u0627\u0644\u0635\u062f\u0642\u0629 \u0645\u0641\u0639\u0651\u0644')),
+                );
+              }
             },
           ),
         ],
       ),
-      body: Column(title: Text(isAr ? '\u0645\u062a\u062a\u0628\u0651\u0639 \u0627\u0644\u0635\u062f\u0642\u0629' : 'Sadaqah Tracker'), centerTitle: true),
       floatingActionButton: FloatingActionButton(onPressed: _addEntry, child: const Icon(Icons.add)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

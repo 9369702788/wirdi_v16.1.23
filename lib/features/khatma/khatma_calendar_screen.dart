@@ -15,7 +15,7 @@ class HijriConverter {
   static String convertToHijri(DateTime gregorian) {
     final jd = _gregorianToJD(gregorian);
     final hijri = _jdToHijri(jd);
-    return '\${hijri['day']}/\${hijri['month']}/\${hijri['year']} AH';
+    return "${hijri['day']}/${hijri['month']}/${hijri['year']} AH";
   }
   
   static DateTime convertToGregorian(int hijriDay, int hijriMonth, int hijriYear) {

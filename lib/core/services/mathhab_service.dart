@@ -4,7 +4,7 @@ class MathhabService {
   static const List<String> mathhabs = [
     'Hanafi',
     'Maliki',
-    'Shafi'i',
+    'Shafi\'i',
     'Hanbali',
   ];
   
